@@ -1,0 +1,7 @@
+ami_id = "ami-00eb69d236edcfaf8"
+instance_type = "t2.micro"
+server_name = "nginx-server"
+enviroment = "devOps"
+owner_project = "codafgamer@gmail.com"
+team_project = "devOps"
+project_name = "terraform test"
