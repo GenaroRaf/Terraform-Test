@@ -1,12 +1,50 @@
-####### Providor ######
+####### variables ######
+variable "ami_id" {
+    description = "ID de la AMI para la instancia EC2"
+    default     = "ami-00eb69d236edcfaf8"
+}
+
+variable "instance_type" {
+    description = "Tipo de instancia EC2"
+    default     = "t2.micro"
+}
+
+variable "server_name" {
+    description = "Nombre del servidor web"
+    default     = "nginx-server"
+}
+
+variable "enviroment" {
+    description = "Ambiente de la aplicación"
+    default     = "test"
+}
+
+variable "owner_project" {
+    description = "Propietario del proyecto"
+    default     = "codafgamer@gmail.com"
+}
+
+variable "team_project" {
+    description = "Equipo de trabajo asigando para el proyecto"
+    default     = "DevOps${var.team_project}"
+}
+
+variable "project_name" {
+    description = "Nombre del proyecto"
+    default     = "Terraform test"
+}
+
+
+
+####### providor ######
 provider "aws" {
     region = "us-east-2"
 }
 
 ####### resource #######
 resource "aws_instance" "nginx-server" {
-    ami           = "ami-00eb69d236edcfaf8"
-    instance_type = "t2.micro"
+    ami           = var.ami_id
+    instance_type = var.instance_type
 
     user_data = <<-EOF
                 #!/bin/bash
@@ -24,11 +62,11 @@ resource "aws_instance" "nginx-server" {
     ] 
 
     tags = {
-        Name = "nginx-server"
-        Enviroment = "test"
-        Owner = "codafgamer@gmail.com"
-        Team = "DevOps"
-        Project = "webinar-CaosBinario"
+        Name = var.server_name
+        Enviroment = var.enviroment
+        Owner = "${var.owner_project}"
+        Team = "${var.team_project}"
+        Project = "${var.project_name}"
     }
 }
 
@@ -36,21 +74,21 @@ resource "aws_instance" "nginx-server" {
 #ssh-keygen -t rsa -b 2048 -f "nginx-server.key"
 
 resource "aws_key_pair" "nginx-server-ssh"{
-    key_name = "nginx-server-ssh"
-    public_key = file("nginx-server.key.pub")
+    key_name = "${var.server_name}-ssh"
+    public_key = file("${var.server_name}.key.pub")
 
     tags = {
-        Name = "nginx-server-ssh"
-        Enviroment = "test"
-        Owner = "codafgamer@gmail.com"
-        Team = "DevOps"
-        Project = "webinar-CaosBinario"
+        Name = "${var.server_name}-ssh"
+        Enviroment = var.enviroment
+        Owner = "${var.owner_project}"
+        Team = "${var.team_project}"
+        Project = "${var:project_name}"
     }
 }
 
 ####### security_group #######
 resource "aws_security_group" "nginx-server-sg"{
-    name        = "nginx-server-sg"
+    name        = "${var.server_name}-sg"
     description = "Security group allowing SSH and HTTP access"
 
     ingress{
@@ -75,11 +113,11 @@ resource "aws_security_group" "nginx-server-sg"{
     }
 
     tags = {
-        Name = "nginx-server-sg"
-        Enviroment = "test"
-        Owner = "codafgamer@gmail.com"
-        Team = "DevOps"
-        Project = "webinar-CaosBinario"
+        Name = "${var.server_name}-sg"
+        Enviroment = "${var.enviroment}"
+        Owner = "${var.owner_project}"
+        Team = "${var.team_project}"
+        Project = "${var:project_name}"
     }
 }
 
@@ -93,4 +131,5 @@ output "server_public_dns"{
     description = "DNS público de la instancia EC2"
     value       = aws_instance-nginx-server.public_dns
 }
+
 
